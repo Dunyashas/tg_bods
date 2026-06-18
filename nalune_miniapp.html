@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>На Луне — Лаунж Бар</title>
+<style>
+  :root {
+    --bg: #07050f;
+    --bg2: #0e0a1e;
+    --bg3: #13102a;
+    --card: #16122e;
+    --card2: #1c1840;
+    --purple: #b06ef3;
+    --purple2: #7c3aed;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+    --blue: #818cf8;
+    --gold: #fbbf24;
+    --text: #f0ecff;
+    --text2: #a89ec0;
+    --text3: #6b6385;
+    --border: rgba(176,110,243,0.18);
+    --border2: rgba(176,110,243,0.35);
+    --glow: 0 0 18px rgba(176,110,243,0.25);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 80% 75%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 65%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 12%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 88%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 22% 22%, rgba(176,110,243,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 66% 44%, rgba(34,211,238,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 88% 66%, rgba(244,114,182,0.5) 0%, transparent 100px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  .header {
+    text-align: center;
+    padding: 28px 20px 16px;
+    position: relative;
+  }
+
+  .header-logo {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--purple), var(--cyan), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2px;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .moon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    opacity: 0.8;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: linear-gradient(to top, #090614 80%, rgba(9,6,20,0.95));
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px 12px;
+    z-index: 1000;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.6);
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    padding: 0 4px;
+    min-width: 60px;
+    position: relative;
+  }
+
+  .nav-item .nav-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    transition: transform 0.25s, color 0.25s;
+    opacity: 0.6;
+  }
+
+  .nav-item.active {
+    color: var(--purple);
+    text-shadow: 0 0 10px rgba(176,110,243,0.3);
+  }
+
+  .nav-item.active .nav-icon {
+    transform: translateY(-4px) scale(1.1);
+    color: var(--purple);
+    opacity: 1;
+  }
+
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    width: 16px;
+    height: 3px;
+    background: var(--purple);
+    border-radius: 4px;
+    box-shadow: 0 0 8px var(--purple);
+  }
+
+  .section { display: none; padding: 0 12px 100px; }
+  .section.active { display: block; }
+
+  .hero-moon {
+    text-align: center;
+    padding: 10px 0 20px;
+    position: relative;
+  }
+
+  .moon-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fef3c7, #fbbf24 40%, #d97706 75%, #92400e);
+    margin: 0 auto 12px;
+    box-shadow: 0 0 30px rgba(251,191,36,0.35), 0 0 60px rgba(251,191,36,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .moon-circle::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.15);
+    top: 22px; left: 28px;
+  }
+
+  .hero-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .quick-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quick-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    opacity: 0.08;
+    background: var(--accent, var(--purple));
+    transform: translate(20px, -20px);
+  }
+
+  .quick-card:active { transform: scale(0.97); }
+  .quick-card .qc-icon { font-size: 24px; margin-bottom: 8px; }
+  .quick-card .qc-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .quick-card .qc-sub { font-size: 11px; color: var(--text3); }
+
+  .quick-card.purple { --accent: var(--purple); border-color: rgba(176,110,243,0.3); }
+  .quick-card.cyan { --accent: var(--cyan); border-color: rgba(34,211,238,0.3); }
+  .quick-card.pink { --accent: var(--pink); border-color: rgba(244,114,182,0.3); }
+  .quick-card.gold { --accent: var(--gold); border-color: rgba(251,191,36,0.3); }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .info-card-header .ic-icon { font-size: 20px; }
+  .info-card-header .ic-title { font-size: 15px; font-weight: 600; flex: 1; }
+  .info-card-header .ic-arrow { color: var(--text3); font-size: 14px; transition: transform 0.2s; }
+  .info-card.open .ic-arrow { transform: rotate(180deg); }
+
+  .info-card-body { display: none; }
+  .info-card.open .info-card-body { display: block; }
+
+  .script-box {
+    background: var(--bg3);
+    border-left: 3px solid var(--purple);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+
+  .script-question {
+    font-size: 12px;
+    color: var(--cyan);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+
+  .script-answer {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .menu-cats {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+  .menu-cats::-webkit-scrollbar { display: none; }
+
+  .cat-btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+
+  .cat-btn.active {
+    background: var(--card2);
+    border-color: var(--border2);
+    color: var(--purple);
+    box-shadow: var(--glow);
+  }
+
+  .menu-group { display: none; }
+  .menu-group.active { display: block; }
+
+  .menu-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 16px 0 8px;
+    padding-left: 2px;
+  }
+
+  .menu-section-title.purple { color: var(--purple); }
+  .menu-section-title.cyan { color: var(--cyan); }
+  .menu-section-title.pink { color: var(--pink); }
+  .menu-section-title.gold { color: var(--gold); }
+  .menu-section-title.green { color: #4ade80; }
+
+  .menu-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+
+  .menu-item-left { flex: 1; }
+  .menu-item-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .menu-item-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+  .menu-item-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--purple);
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .booking-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .book-type-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .book-type-card.selected {
+    border-color: var(--purple);
+    background: rgba(124,58,237,0.12);
+    box-shadow: var(--glow);
+  }
+
+  .book-type-card .bt-icon { font-size: 28px; margin-bottom: 8px; }
+  .book-type-card .bt-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .book-type-card .bt-min { font-size: 11px; color: var(--text3); }
+  .book-type-card .bt-price { font-size: 13px; color: var(--purple); font-weight: 600; margin-top: 4px; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; display: block; letter-spacing: 1px; text-transform: uppercase; }
+
+  .form-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-input:focus { border-color: var(--purple); }
+  .form-input::placeholder { color: var(--text3); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--purple2), #9333ea);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    transition: all 0.2s;
+  }
+
+  .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+  .booking-result {
+    background: var(--card);
+    border: 1px solid rgba(34,211,238,0.3);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    display: none;
+  }
+
+  .booking-result.show { display: block; }
+  .booking-result .br-icon { font-size: 40px; margin-bottom: 12px; }
+  .booking-result .br-title { font-size: 17px; font-weight: 700; color: var(--cyan); margin-bottom: 8px; }
+  .booking-result .br-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  .rule-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .rule-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple2), #9333ea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .rule-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .rule-text strong { color: var(--pink); font-weight: 600; }
+
+  .entry-day {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .entry-day-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .entry-row:last-child { border-bottom: none; }
+  .entry-time { font-size: 13px; color: var(--text2); }
+  .entry-price { font-size: 14px; font-weight: 600; color: var(--gold); }
+
+  .section-heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hookah-card {
+    background: linear-gradient(135deg, rgba(176,110,243,0.1), rgba(34,211,238,0.05));
+    border: 1px solid rgba(176,110,243,0.3);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hookah-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .hookah-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .hookah-price { font-size: 18px; font-weight: 700; color: var(--purple); }
+
+  .special-card {
+    background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(176,110,243,0.06));
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .special-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(251,191,36,0.15);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .special-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .special-desc { font-size: 13px; color: var(--text2); line-height: 1.55; }
+
+  .problem-card {
+    background: var(--card);
+    border: 1px solid rgba(244,114,182,0.2);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  .problem-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .problem-icon { font-size: 20px; }
+  .problem-title { font-size: 14px; font-weight: 600; color: var(--pink); }
+
+  .problem-solution {
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .solution-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #4ade80;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .copy-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--purple2), #9333ea);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">НА ЛУН≡</div>
+    <div class="header-sub">л а у н ж &nbsp; б а р</div>
+    <div class="moon-badge">🌙 &nbsp;Гродно &nbsp;·&nbsp; Чт-Вс 19:00-01:00 · Пт-Сб 19:00-06:00</div>
+  </div>
+
+  <!-- =================== HOME =================== -->
+  <div class="section active" id="section-home">
+    <div class="hero-moon">
+      <div class="moon-circle"></div>
+      <div class="hero-title">Добро пожаловать на орбиту</div>
+      <div class="hero-sub">Лаунж-бар «На Луне» — место, где звёзды ближе</div>
+    </div>
+
+    <div class="quick-grid">
+      <div class="quick-card purple" onclick="showSection('booking')">
+        <div class="qc-icon">🪑</div>
+        <div class="qc-title">Столик</div>
+        <div class="qc-sub">от 30р/гость</div>
+      </div>
+      <div class="quick-card gold" onclick="showSection('booking')">
+        <div class="qc-icon">👑</div>
+        <div class="qc-title">VIP комната</div>
+        <div class="qc-sub">от 50р/гость</div>
+      </div>
+      <div class="quick-card cyan" onclick="showSection('menu')">
+        <div class="qc-icon">🍸</div>
+        <div class="qc-title">Меню бара</div>
+        <div class="qc-sub">полный список</div>
+      </div>
+      <div class="quick-card pink" onclick="showSection('rules')">
+        <div class="qc-icon">🎵</div>
+        <div class="qc-title">DJ & Караоке</div>
+        <div class="qc-sub">каждую ночь</div>
+      </div>
+
+    </div>
+
+    <div class="special-card">
+      <div class="special-tag">🎂 день рождения</div>
+      <div class="special-title">Скидка 20% в ваш день!</div>
+      <div class="special-desc">При предзаказе от 80р/гость — скидка 20% на всю кухню и праздничная атмосфера от команды 🥂</div>
+    </div>
+
+    <div class="special-card" style="background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(176,110,243,0.05)); border-color: rgba(34,211,238,0.25);">
+      <div class="special-tag" style="background: rgba(34,211,238,0.12); color: var(--cyan);">🥃 акция «свой алкоголь»</div>
+      <div class="special-title">Пронос любимых напитков разрешен</div>
+      <div class="special-desc">Вы можете свободно дополнить вечер своим крепким алкоголем без пробкового сбора. Условие простое: оформляется предварительный заказ кухни и бара на сумму от 100 рублей на каждого человека. В эту стоимость уже входит символический алкоголь от заведения! *(Например: для компании из 6 человек предзаказ составляет от 600 рублей).*</div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">👗</span>
+        <span class="ic-title" style="color: var(--pink)">Дресс-код & Face Control</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 10px;">Вход строго с <b>18 лет</b>. Обязателен оригинал паспорта или водительского удостоверения. Одежда в спортивном стиле не допускается.</div>
+        
+        <div class="script-box">
+          <div class="script-question">Для мужчин</div>
+          <div class="script-answer">Брюки, рубашки, пиджаки, клубная одежда, туфли</div>
+        </div>
+        <div class="script-box" style="border-left-color: var(--pink)">
+          <div class="script-question" style="color: var(--pink)">Для девушек</div>
+          <div class="script-answer">Платья, юбки, блузы, брючные костюмы</div>
+        </div>
+        <div style="font-size: 12px; color: var(--text3); padding-top: 4px;">Администрация вправе отказать в посещении при несоответствии дресс-коду</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">⏰</span>
+        <span class="ic-title" style="color: var(--gold)">Вход, DJ-шоу и Караоке</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div class="entry-day">
+          <div class="entry-day-title">📆 Четверг и Воскресенье (19:00 - 01:00)</div>
+          <div class="entry-row"><span class="entry-time">Вход в заведение</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+          <div class="entry-row"><span class="entry-time">Караоке (с 19:00)</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+        </div>
+        <div class="entry-day">
+          <div class="entry-day-title">🎉 Пятница (19:00 - 06:00)</div>
+          <div class="entry-row"><span class="entry-time">До 23:00 (Вход)</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+          <div class="entry-row"><span class="entry-time">Караоке (с 21:00)</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+          <div class="entry-row"><span class="entry-time">Вход с улицы после 23:00</span><span class="entry-price">15р</span></div>
+          <div class="entry-row"><span class="entry-time">Для тех, кто уже внутри (с 24:00 за DJ)</span><span class="entry-price">10р</span></div>
+        </div>
+        <div class="entry-day">
+          <div class="entry-day-title">🎉 Суббота (19:00 - 06:00)</div>
+          <div class="entry-row"><span class="entry-time">До 23:00 (Вход)</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+          <div class="entry-row"><span class="entry-time">Караоке (с 21:00)</span><span class="entry-price" style="color: #4ade80">Бесплатно</span></div>
+          <div class="entry-row"><span class="entry-time">Для тех, кто уже внутри (с 23:00 за DJ)</span><span class="entry-price">10р</span></div>
+          <div class="entry-row"><span class="entry-time">Вход с улицы после 24:00</span><span class="entry-price">15р</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== MENU =================== -->
+  <div class="section" id="section-menu">
+    <div class="section-heading">🍸 Меню</div>
+    <div class="menu-cats">
+      <button class="cat-btn active" onclick="showMenuCat('cocktails', this)">🍸 Коктейли</button>
+      <button class="cat-btn" onclick="showMenuCat('shots', this)">🥃 Лунные Шоты</button>
+      <button class="cat-btn" onclick="showMenuCat('crazy', this)">🌀 Crazy Menu</button>
+      <button class="cat-btn" onclick="showMenuCat('alcohol', this)">🍾 Алкоголь</button>
+      <button class="cat-btn" onclick="showMenuCat('wine-beer', this)">🍷 Вино/Пиво</button>
+      <button class="cat-btn" onclick="showMenuCat('food', this)">🍽 Кухня</button>
+      <button class="cat-btn" onclick="showMenuCat('nonalco', this)">🧃 Безалк.</button>
+      <button class="cat-btn" onclick="showMenuCat('hookah', this)">🌿 Кальяны</button>
+    </div>
+
+    <!-- КОКТЕЙЛИ -->
+    <div class="menu-group active" id="mg-cocktails">
+      <div class="menu-section-title purple">Авторские коктейли</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Астероид</div><div class="menu-item-desc">вермут rosso, тоник, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Гравитация</div><div class="menu-item-desc">водка, абсент, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Звёздный путь</div><div class="menu-item-desc">темный ром, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Космос</div><div class="menu-item-desc">игристое, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Луна</div><div class="menu-item-desc">джин, сливки, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Млечный путь</div><div class="menu-item-desc">водка, игристое, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Орбита</div><div class="menu-item-desc">водка, содовая, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Ракета</div><div class="menu-item-desc">водка, тоник, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Спутник</div><div class="menu-item-desc">джин, вермут bianco, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Эклиптика</div><div class="menu-item-desc">игристое, кордиал</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Юпитер</div><div class="menu-item-desc">ром, вермут rosso, кордиал</div></div><div class="menu-item-price">15р</div></div>
+
+      <div class="menu-section-title cyan">Классические Коктейли</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Апероль шприц</div></div><div class="menu-item-price">20р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Белый русский</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Виски-кола</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Виски сауэр</div></div><div class="menu-item-price">16р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Водка-Энергетик</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Голубая лагуна</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Голубые Гавайи</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Джин-тоник</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Куба Либре</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Лонг Айленд</div></div><div class="menu-item-price">20р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Маргарита</div></div><div class="menu-item-price">19р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Мохито</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Негрони</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Пина Колада</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Порнстар</div></div><div class="menu-item-price">22р</div></div>
+    </div>
+
+    <!-- ЛУННЫЕ ШОТЫ -->
+    <div class="menu-group" id="mg-shots">
+      <div class="menu-section-title pink">Полметра шотов (10 шотов / 400 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Apple Moon</div><div class="menu-item-desc">Яблочная луна</div></div><div class="menu-item-price">45р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Bubble Gum Moon</div><div class="menu-item-desc">Лунная жвачка</div></div><div class="menu-item-price">50р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Blue Moon</div><div class="menu-item-desc">Голубая луна</div></div><div class="menu-item-price">40р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Mexican Moon</div><div class="menu-item-desc">Мексиканская луна</div></div><div class="menu-item-price">65р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Watermelon Moon</div><div class="menu-item-desc">Лунный арбуз</div></div><div class="menu-item-price">45р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Moon Popcorn</div><div class="menu-item-desc">Лунный попкорн</div></div><div class="menu-item-price">40р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Strawberry Moon</div><div class="menu-item-desc">Клубничная луна</div></div><div class="menu-item-price">50р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Dark Moon</div><div class="menu-item-desc">Темная луна</div></div><div class="menu-item-price">45р</div></div>
+    </div>
+
+    <!-- CRAZY MENU -->
+    <div class="menu-group" id="mg-crazy">
+      <div class="menu-section-title red" style="color: var(--pink)">Crazy Menu</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Договор веры</div><div class="menu-item-desc">сбалансированная комбинация, которую бармен никогда не повторяет дважды</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Текила Бум</div><div class="menu-item-desc">интерактивная подача</div></div><div class="menu-item-price">20р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Ревнивая жена</div><div class="menu-item-desc">интерактивная подача</div></div><div class="menu-item-price">20р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Потеряли пацана</div></div><div class="menu-item-price">25р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Парад планет</div></div><div class="menu-item-price">95р</div></div>
+    </div>
+
+    <!-- КРЕПКИЙ АЛКОГОЛЬ -->
+    <div class="menu-group" id="mg-alcohol">
+      <div class="menu-section-title gold">Виски (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Black Velvet caramel</div><div class="menu-item-desc">Канада</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Jim Beam</div><div class="menu-item-desc">США</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Jim Beam вкусовой</div><div class="menu-item-desc">США</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Grant's</div><div class="menu-item-desc">Шотландия</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Ballantines</div><div class="menu-item-desc">Шотландия</div></div><div class="menu-item-price">13р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Bushmills</div><div class="menu-item-desc">Ирландия</div></div><div class="menu-item-price">13р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Jameson</div><div class="menu-item-desc">Ирландия</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Jack Daniel's</div><div class="menu-item-desc">США</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Monkey Shoulder</div><div class="menu-item-desc">Шотландия односолодовый</div></div><div class="menu-item-price">20р</div></div>
+
+      <div class="menu-section-title purple">Ром (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Captain Morgan white</div><div class="menu-item-desc">Великобритания</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Captain Morgan Dark</div><div class="menu-item-desc">Великобритания</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Captain Morgan Spiced</div><div class="menu-item-desc">Великобритания</div></div><div class="menu-item-price">13р</div></div>
+
+      <div class="menu-section-title cyan">Джин (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Gordon's London Dry</div><div class="menu-item-desc">Великобритания</div></div><div class="menu-item-price">11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Gordon's Premium Pink</div><div class="menu-item-desc">Великобритания</div></div><div class="menu-item-price">12р</div></div>
+
+      <div class="menu-section-title gold">Коньяк (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Армянский 6*</div><div class="menu-item-desc">Армения</div></div><div class="menu-item-price">11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Арджеван 25*</div><div class="menu-item-desc">Армения</div></div><div class="menu-item-price">27р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Courvoisier VS</div><div class="menu-item-desc">Франция</div></div><div class="menu-item-price">27р</div></div>
+
+      <div class="menu-section-title pink">Текила (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Sierra Blanco</div><div class="menu-item-desc">Мексика</div></div><div class="menu-item-price">13р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Sierra Reposado</div><div class="menu-item-desc">Мексика</div></div><div class="menu-item-price">13р</div></div>
+
+      <div class="menu-section-title green">Водка & Абсент (40 мл / 0.5 л)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Бульбаш</div><div class="menu-item-desc">РБ</div></div><div class="menu-item-price">5р / 50р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Danzka</div><div class="menu-item-desc">Дания</div></div><div class="menu-item-price">11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Absinth</div><div class="menu-item-desc">Чехия</div></div><div class="menu-item-price">15р</div></div>
+
+      <div class="menu-section-title cyan">Ликер & Вермут (40 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Aperol</div><div class="menu-item-desc">Италия</div></div><div class="menu-item-price">11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Martini Bianco</div><div class="menu-item-desc">Италия</div></div><div class="menu-item-price">7р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Martini Fiero</div><div class="menu-item-desc">Италия</div></div><div class="menu-item-price">8р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Jagermeister</div><div class="menu-item-desc">Германия</div></div><div class="menu-item-price">11р</div></div>
+    </div>
+
+    <!-- ВИНО / ПИВО -->
+    <div class="menu-group" id="mg-wine-beer">
+      <div class="menu-section-title purple">Игристое (125 мл / 750 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Baron d'Arignac</div><div class="menu-item-desc">РБ, сух п/сух п/сл</div></div><div class="menu-item-price">10р / 50р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Prosecco</div><div class="menu-item-desc">Италия, brut, 750мл</div></div><div class="menu-item-price">80р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Moet & Chandon</div><div class="menu-item-desc">Франция, brut, 750мл</div></div><div class="menu-item-price">390р</div></div>
+
+      <div class="menu-section-title cyan">Вино Белое (750 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Corte Mascaldo</div><div class="menu-item-desc">Италия, сухое</div></div><div class="menu-item-price">55р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Monfiorito</div><div class="menu-item-desc">Италия, п/сух п/сл</div></div><div class="menu-item-price">55р</div></div>
+
+      <div class="menu-section-title pink">Вино Красное (750 мл)</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Corte Mascaldo</div><div class="menu-item-desc">Италия, сухое</div></div><div class="menu-item-price">55р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Monfiorito</div><div class="menu-item-desc">Италия, п/сух п/сл</div></div><div class="menu-item-price">55р</div></div>
+
+      <div class="menu-section-title gold">Пиво</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Premium</div><div class="menu-item-desc">разл. 0.5л</div></div><div class="menu-item-price">8р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Пшеничное</div><div class="menu-item-desc">разл. 0.5л</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Аксамітнае</div><div class="menu-item-desc">разл. 0.5л</div></div><div class="menu-item-price">8р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Вечер в Брюгге</div><div class="menu-item-desc">бут. 0.5л</div></div><div class="menu-item-price">8р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Коронет</div><div class="menu-item-desc">бут. 0.56л</div></div><div class="menu-item-price">8р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Портер</div><div class="menu-item-desc">бут. 0.5л</div></div><div class="menu-item-price">8р</div></div>
+    </div>
+
+    <!-- КУХНЯ -->
+    <div class="menu-group" id="mg-food">
+      <div class="menu-section-title purple">Стартеры</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Греческий с оливками и вялеными томатами</div><div class="menu-item-desc">250г</div></div><div class="menu-item-price">18р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Цезарь с цыплёнком</div><div class="menu-item-desc">240г</div></div><div class="menu-item-price">22р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Цезарь с креветкой</div><div class="menu-item-desc">240г</div></div><div class="menu-item-price">26р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Тартар из тунца</div><div class="menu-item-desc">210г</div></div><div class="menu-item-price">25р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Тартар из говядины</div><div class="menu-item-desc">210г</div></div><div class="menu-item-price">25р</div></div>
+
+      <div class="menu-section-title cyan">Холодные закуски</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Мясная доска</div><div class="menu-item-desc">прошутто, пепперони, салями, рулетики из ветчины, бекон (250г)</div></div><div class="menu-item-price">30р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Овощная доска</div><div class="menu-item-desc">томат, огурец, перец, салат (350г)</div></div><div class="menu-item-price">18р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сырная доска</div><div class="menu-item-desc">4 вида сыра, орехи, финики, виноград, мёд (240г)</div></div><div class="menu-item-price">30р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Фруктовая доска</div><div class="menu-item-desc">сезонные и тропические фрукты (380г)</div></div><div class="menu-item-price">20р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Канапе на шпажке</div><div class="menu-item-desc">230г</div></div><div class="menu-item-price">24р</div></div>
+
+      <div class="menu-section-title pink">Горячие закуски</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Гренки с сыром</div><div class="menu-item-desc">280г</div></div><div class="menu-item-price">11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Картофель фри</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Картофельные дольки</div><div class="menu-item-desc">200г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крокеты картофельные</div><div class="menu-item-desc">170г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Креветки темпура</div><div class="menu-item-desc">8 шт</div></div><div class="menu-item-price">25р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крискат</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крылышки BBQ</div><div class="menu-item-desc">300г</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крылышки Терияки</div><div class="menu-item-desc">300г</div></div><div class="menu-item-price">17р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крылышки по-Тайски</div><div class="menu-item-desc">320г</div></div><div class="menu-item-price">18р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Луковые кольца</div><div class="menu-item-desc">120г</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сырные палочки</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Стрипсы</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сет для компании</div><div class="menu-item-desc">колбаски-гриль, крылышки, луковые кольца, крокеты, крискат, сухарики, начос (600г)</div></div><div class="menu-item-price">45р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сет для большой компании</div><div class="menu-item-desc">колбаски-гриль, крылышки, луковые кольца, крокеты, крискат, сухарики, начос (1200г)</div></div><div class="menu-item-price">90р</div></div>
+
+      <div class="menu-section-title gold">Сэндвич-Клаб</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сэндвич-клаб с вялеными томатами</div><div class="menu-item-desc">120г</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сэндвич-клаб Цезарь с цыпленком</div><div class="menu-item-desc">130г</div></div><div class="menu-item-price">14р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сэндвич-клаб с лососем</div><div class="menu-item-desc">130г</div></div><div class="menu-item-price">18р</div></div>
+
+      <div class="menu-section-title green">Сытно & Вкусно</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Бургер фирменный с говяжьей котлетой</div><div class="menu-item-desc">250г</div></div><div class="menu-item-price">18р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Бургер фирменный с куриной котлетой</div><div class="menu-item-desc">250г</div></div><div class="menu-item-price">18р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name"> Кесадилья с говядиной</div><div class="menu-item-desc">350г</div></div><div class="menu-item-price">18р</div></div>
+
+      <div class="menu-section-title purple">Горячие блюда</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Ребрышки свиные BBQ</div><div class="menu-item-desc">250г</div></div><div class="menu-item-price">25р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Кордон-Блю</div><div class="menu-item-desc">200г</div></div><div class="menu-item-price">25р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Стейк из тунца в сливочно-чесночном соусе</div><div class="menu-item-desc">200г</div></div><div class="menu-item-price">25р</div></div>
+
+      <div class="menu-section-title cyan">Гарниры & Соусы</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Картофель фри</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Картофельные дольки</div><div class="menu-item-desc">200г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Крискат</div><div class="menu-item-desc">150г</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Овощи гриль</div><div class="menu-item-desc">250г</div></div><div class="menu-item-price">15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Добавь соус</div><div class="menu-item-desc">барбекю, сырный, чесночный</div></div><div class="menu-item-price">3р</div></div>
+
+      <div class="menu-section-title pink">Десерты</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Чизкейк Сан Себастьян</div><div class="menu-item-desc">130г</div></div><div class="menu-item-price">12р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Мороженое Луна</div><div class="menu-item-desc">пломбир, фрукты, орехи, шоколадный соус (210г)</div></div><div class="menu-item-price">12р</div></div>
+    </div>
+
+    <!-- БЕЗАЛКОГОЛЬНЫЕ НАПИТКИ -->
+    <div class="menu-group" id="mg-nonalco">
+      <div class="menu-section-title cyan">Безалкогольные напитки</div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Лонг Дринк</div><div class="menu-item-desc">апельсин-ваниль / пало санто-банан / вишня-шисо / малина-пан / жасмин-бузина / манго-маркуйя / фуджи-сакура</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Aura 0.5</div></div><div class="menu-item-price">4р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Pepsi, Mirinda, 7up 0.5</div></div><div class="menu-item-price">5р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Сок R.I.C.H</div><div class="menu-item-desc">0.25л / 1л</div></div><div class="menu-item-price">5р / 15р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Burn 0.25</div></div><div class="menu-item-price">9р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Чай 0.5л</div><div class="menu-item-desc">зеленый / черный / ягодный</div></div><div class="menu-item-price">7р / 11р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Американо, Эспрессо</div></div><div class="menu-item-price">5р</div></div>
+      <div class="menu-item"><div class="menu-item-left"><div class="menu-item-name">Капучино, Латте</div></div><div class="menu-item-price">6р</div></div>
+    </div>
+
+    <!-- КАЛЬЯНЫ -->
+    <div class="menu-group" id="mg-hookah">
+      <div class="menu-section-title purple">Кальяны</div>
+      <div class="hookah-card"><div><div class="hookah-name">Супер</div><div class="hookah-sub">Стандартный набо вкусов</div></div><div class="hookah-price">35р</div></div>
+      <div class="hookah-card"><div><div class="hookah-name">Премиум</div><div class="hookah-sub">Премиальные табаки</div></div><div class="hookah-price">45р</div></div>
+      <div class="hookah-card"><div><div class="hookah-name">Авторские</div><div class="hookah-sub">Эксклюзивные миксы мастера</div></div><div class="hookah-price">от 55р</div></div>
+    </div>
+  </div>
+
+  <!-- =================== BOOKING =================== -->
+  <div class="section" id="section-booking">
+    <div class="section-heading">📅 Забронировать</div>
+    <div class="booking-type-grid">
+      <div class="book-type-card selected" id="btc-table" onclick="selectBookType('table')">
+        <div class="bt-icon">🪑</div>
+        <div class="bt-title">Столик</div>
+        <div class="bt-min">депозит/чел</div>
+        <div class="bt-price">30 BYN</div>
+      </div>
+      <div class="book-type-card" id="btc-vip" onclick="selectBookType('vip')">
+        <div class="bt-icon">👑</div>
+        <div class="bt-title">VIP комната</div>
+        <div class="bt-min">депозит/чел</div>
+        <div class="bt-price">50 BYN</div>
+      </div>
+    </div>
+
+    <div id="booking-form-block">
+      <div class="form-group">
+        <label class="form-label">Ваше имя</label>
+        <input type="text" class="form-input" id="b-name" placeholder="Иван">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Телефон</label>
+        <input type="tel" class="form-input" id="b-phone" placeholder="+375 (XX) XXX-XX-XX">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Гостей</label>
+          <input type="number" class="form-input" id="b-guests" value="2" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Дата</label>
+          <input type="date" class="form-input" id="b-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Комментарий</label>
+        <input type="text" class="form-input" id="b-comment" placeholder="Пожелания, время прихода...">
+      </div>
+      <button class="submit-btn" onclick="submitBooking()">Отправить заявку 🚀</button>
+    </div>
+
+    <div class="booking-result" id="booking-success-block">
+      <div class="br-icon">✨</div>
+      <div class="br-title">Заявка принята!</div>
+      <div class="br-text">Наш менеджер свяжется с вами в ближайшее время для подтверждения бронирования. Ждем вас на Луне! 🌙</div>
+    </div>
+  </div>
+
+  <!-- =================== SCRIPTS / QUESTIONS =================== -->
+  <div class="section" id="section-scripts">
+    <div class="section-heading">💬 <span id="scripts-heading-label">Скрипты ответов</span></div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">✨</span>
+        <span class="ic-title">Приветствие гостя</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div class="script-box">
+          <div class="script-answer" id="sc-hello">Добрый вечер.🌒 С радостью помогу вам забронировать столик. На какую дату вы планируете визит? Напоминаю наш график: Чт-Вс с 19:00 до 01:00, Пт-Сб с 19:00 до 06:00.</div>
+          <button class="copy-btn admin-action-btn" onclick="copyScriptText('sc-hello', 'Приветствие гостя')">Скопировать скрипт</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">🪑</span>
+        <span class="ic-title">Условия обычного стола</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div class="script-box">
+          <div class="script-answer" id="sc-table">Добрый вечер! Чтобы забронировать столик, вам достаточно перейти во вкладку «Бронь» в нижнем меню и заполнить короткую форму. Бронирование столика предполагает собой минимальный заказ (депозит) в размере 30 рублей с каждого гостя по меню бара и кухни. В Чт и Вс вход бесплатный, в Пт и Сб действуют тарифы шоу-программы.</div>
+          <button class="copy-btn admin-action-btn" onclick="copyScriptText('sc-table', 'Условия обычного стола')">Скопировать скрипт</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">🎟️</span>
+        <span class="ic-title">Стоимость входа и программа</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div class="script-box">
+          <div class="script-answer" id="sc-program">Наш режим работы и условия входа:
+• Четверг и Воскресенье: работаем с 19:00 до 01:00, вход абсолютно БЕСПЛАТНЫЙ всю ночь.
+• Пятница (19:00 - 06:00): До 23:00 вход бесплатный. После 23:00 вход с улицы на программу — 15 рублей. Для тех гостей, кто занял столы до 23:00, плата за программу (начинается в 24:00) составит всего 10 рублей.
+• Суббота (19:00 - 06:00): До 23:00 вход бесплатный. В 23:00 стартует DJ-шоу. Для гостей в зале — 10 рублей, для тех, кто приходит из города после 24:00 — вход 15 рублей.</div>
+          <button class="copy-btn admin-action-btn" onclick="copyScriptText('sc-program', 'Стоимость входа и программа')">Скопировать скрипт</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header" onclick="toggleCard(this)">
+        <span class="ic-icon">🥃</span>
+        <span class="ic-title">Свой алкоголь</span>
+        <span class="ic-arrow">▾</span>
+      </div>
+      <div class="info-card-body">
+        <div class="script-box">
+          <div class="script-answer" id="sc-alcohol">Да, у нас действует отличная акция «Свой алкоголь»! Вы можете свободно принести крепкие напитки с собой без пробкового сбора. 
+
+Для этого оформляется предварительный заказ кухни и бара на сумму от 100 рублей на каждого человека. В эту стоимость уже будет автоматически включен символический стартовый алкоголь от нашего заведения, а все остальные напитки вы приносите свои!
+
+Например, если вас будет 6 человек, общая сумма предзаказа составит от 600 рублей. Скажите, пожалуйста, на какое количество гостей вы планируете отдых, чтобы я сориентировал вас по финальным условиям? 😊</div>
+          <button class="copy-btn admin-action-btn" onclick="copyScriptText('sc-alcohol', 'Свой алкоголь')">Скопировать скрипт</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== RULES =================== -->
+  <div class="section" id="section-rules">
+    <div class="section-heading">📋 Правила заведения</div>
+    <div class="rule-card"><div class="rule-num">1</div><div class="rule-text">Вход строго с <strong>18 лет</strong> (при себе иметь оригинал паспорта).</div></div>
+    <div class="rule-card"><div class="rule-num">2</div><div class="rule-text">Запрещено приносить свои напитки и еду (кроме официальных условий предложения «Свой алкоголь» при предзаказе от 100р/чел).</div></div>
+    <div class="rule-card"><div class="rule-num">3</div><div class="rule-text">Курение сигарет и электронок внутри помещений строго запрещено. Разрешены только фирменные дымные кальяны.</div></div>
+    <div class="rule-card"><div class="rule-num">4</div><div class="rule-text">Действует Face Control и Dress Code. Одежда в спортивном стиле не допускается.</div></div>
+  </div>
+
+  <!-- =================== ADMIN PANEL =================== -->
+  <div class="section" id="section-admin">
+    <div class="section-heading">⚡ Служебные регламенты</div>
+    <div class="problem-card">
+      <div class="problem-header"><span class="problem-icon">🤬</span><div class="problem-title">Конфликт из-за платного входа</div></div>
+      <div class="problem-solution"><div class="solution-label">Решение:</div>Спокойно объяснить, что после 23:00 работает приглашённый DJ и это стандартная шоу-программа. При сильном негативе позвать старшего смены.</div>
+    </div>
+  </div>
+
+  <!-- ДИНАМИЧЕСКОЕ НИЖНЕЕ МЕНЮ -->
+  <div class="bottom-nav" id="custom-bottom-menu"></div>
+
+</div>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  // Константы конфигурации
+  const TG_BOT_TOKEN = '8683040747:AAHooN4JQefQ2H3PB1W-htE-3lwhjgwYodc';
+  const ADMIN_IDS = [673643650, 222222222, 333333333];
+
+  // Глобальное состояние приложения
+  let currentSection = 'home';
+  let selectedBookType = 'table';
+  let isAdmin = false;
+  let currentTgId = null;
+
+  // Инициализация Telegram WebApp
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+    
+    const user = window.Telegram.WebApp.initDataUnsafe?.user;
+    if (user) {
+      currentTgId = user.id;
+      if (ADMIN_IDS.includes(currentTgId)) {
+        isAdmin = true;
+      }
+    }
+  }
+
+  // Динамическая отрисовка нижнего навигационного меню
+  function renderBottomMenu() {
+    const menuContainer = document.getElementById('custom-bottom-menu');
+    if (!menuContainer) return;
+
+    let menuHtml = `
+      <button class="nav-item active" id="nav-home" onclick="showSection('home')"><span class="nav-icon">🌕</span>Главная</button>
+      <button class="nav-item" id="nav-menu" onclick="showSection('menu')"><span class="nav-icon">🍹</span>Меню</button>
+      <button class="nav-item" id="nav-booking" onclick="showSection('booking')"><span class="nav-icon">📅</span>Бронь</button>
+    `;
+
+    if (isAdmin) {
+      menuHtml += `
+        <button class="nav-item" id="nav-scripts" onclick="showSection('scripts')"><span class="nav-icon">💬</span>Скрипты</button>
+        <button class="nav-item" id="nav-admin" onclick="showSection('admin')"><span class="nav-icon">⚡</span>Админу</button>
+      `;
+    } else {
+      menuHtml += `
+        <button class="nav-item" id="nav-scripts" onclick="showSection('scripts')"><span class="nav-icon">💬</span>Вопросы</button>
+        <button class="nav-item" id="nav-rules" onclick="showSection('rules')"><span class="nav-icon">📋</span>Правила</button>
+      `;
+    }
+    
+    menuContainer.innerHTML = menuHtml;
+
+    // Настройка отображения элементов интерфейса в зависимости от роли
+    const scriptsHeadingLabel = document.getElementById('scripts-heading-label');
+    const adminActionButtons = document.querySelectorAll('.admin-action-btn');
+
+    if (isAdmin) {
+      if (scriptsHeadingLabel) scriptsHeadingLabel.textContent = 'Скрипты ответов';
+      adminActionButtons.forEach(btn => btn.style.display = 'inline-block');
+    } else {
+      if (scriptsHeadingLabel) scriptsHeadingLabel.textContent = 'Вопросы и ответы';
+      adminActionButtons.forEach(btn => btn.style.display = 'none');
+    }
+  }
+
+  // Переключение между экранами/секциями приложения
+  function showSection(sectId) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+    const targetSect = document.getElementById('section-' + sectId);
+    const targetBtn = document.getElementById('nav-' + sectId);
+
+    if (targetSect) targetSect.classList.add('active');
+    if (targetBtn) targetBtn.classList.add('active');
+
+    currentSection = sectId;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Логика работы аккордеонов (дресс-код, правила, вопросы)
+  function toggleCard(header) {
+    const card = header.parentElement;
+    const isOpen = card.classList.contains('open');
+    
+    // Закрываем другие карточки в текущей секции для аккуратности
+    document.querySelectorAll('.info-card').forEach(c => c.classList.remove('open'));
+    
+    if (!isOpen) {
+      card.classList.add('open');
+      // Оповещение админов, если обычный гость читает FAQ
+      if (!isAdmin && currentSection === 'scripts') {
+        const titleText = header.querySelector('.ic-title')?.textContent || 'Неизвестная тема';
+        sendNotificationToAll(`👀 <b>Гость изучает вопросы на Луне</b>\n<b>Тема:</b> ${titleText}`);
+      }
+    }
+  }
+
+  // Выбор типа бронирования (Обычный стол / VIP)
+  function selectBookType(type) {
+    selectedBookType = type;
+    const tableBtn = document.getElementById('btc-table');
+    const vipBtn = document.getElementById('btc-vip');
+    
+    if (tableBtn) tableBtn.classList.remove('selected');
+    if (vipBtn) vipBtn.classList.remove('selected');
+    
+    const currentBtn = document.getElementById('btc-' + type);
+    if (currentBtn) currentBtn.classList.add('selected');
+  }
+
+  // Фильтрация категорий в меню
+  function showMenuCat(catId, btn) {
+    document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('active'));
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    
+    const targetGroup = document.getElementById('mg-' + catId);
+    if (targetGroup) targetGroup.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  // Копирование скриптов для администраторов
+  function copyScriptText(elementId, topicName) {
+    const textEl = document.getElementById(elementId);
+    if (!textEl) return;
+    const textToCopy = textEl.innerText;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToastNotification('✅ Скопировано!');
+        sendNotificationToAll(`ℹ️ <b>Администратор скопировал скрипт</b>\n<b>Раздел:</b> ${topicName}`);
+      }).catch(() => fallbackCopyScript(textToCopy, topicName));
+    } else {
+      fallbackCopyScript(textToCopy, topicName);
+    }
+  }
+
+  // Резервный метод копирования, если API буфера обмена недоступно
+  function fallbackCopyScript(text, topicName) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed'; // Избегаем прокрутки страницы вниз
+    document.body.appendChild(el);
+    el.select();
+    try {
+      document.execCommand('copy');
+      showToastNotification('✅ Скопировано!');
+      sendNotificationToAll(`ℹ️ <b>Администратор скопировал скрипт</b>\n<b>Раздел:</b> ${topicName}`);
+    } catch (err) {
+      console.error('Не удалось скопировать текст:', err);
+    }
+    document.body.removeChild(el);
+  }
+
+  // Всплывающее уведомление внутри приложения
+  function showToastNotification(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#7c3aed;color:#fff;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 0 20px rgba(124,58,237,0.5);transition: opacity 0.3s;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  }
+
+  // Обработка и отправка формы бронирования
+  function submitBooking() {
+    const nameEl = document.getElementById('b-name');
+    const phoneEl = document.getElementById('b-phone');
+    const guestsEl = document.getElementById('b-guests');
+    const dateEl = document.getElementById('b-date');
+    const commentEl = document.getElementById('b-comment');
+
+    const name = nameEl ? nameEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const guests = guestsEl ? guestsEl.value : '1';
+    const date = dateEl ? dateEl.value : '';
+    const comment = (commentEl && commentEl.value.trim()) ? commentEl.value.trim() : 'нет';
+    const typeLabel = selectedBookType === 'vip' ? 'VIP комната 👑' : 'Обычный столик 🪑';
+
+    if (!name || !phone || !date) {
+      alert('Пожалуйста, заполните Имя, Телефон и Дату бронирования.');
+      return;
+    }
+
+    const messageText = `🚨 <b>НОВАЯ ЗАЯВКА НА БРОНЬ (НА ЛУНЕ)</b> 🚨\n\n` +
+                        `<b>Тип места:</b> ${typeLabel}\n` +
+                        `<b>Имя:</b> ${name}\n` +
+                        `<b>Телефон:</b> ${phone}\n` +
+                        `<b>Кол-во гостей:</b> ${guests}\n` +
+                        `<b>Дата визита:</b> ${date}\n` +
+                        `<b>Комментарий:</b> ${comment}\n\n` +
+                        `👤 Telegram ID: ${currentTgId || 'Не определён'}`;
+
+    sendNotificationToAll(messageText);
+
+    // Скрываем форму и показываем экран успешной отправки
+    const formBlock = document.getElementById('booking-form-block');
+    const successBlock = document.getElementById('booking-success-block');
+    
+    if (formBlock) formBlock.style.display = 'none';
+    if (successBlock) successBlock.classList.add('show');
+
+    // Очищаем поля формы для следующих бронирований
+    const formElement = document.querySelector('#section-booking form');
+    if (formElement) formElement.reset();
+  }
+
+  // Функция массовой отправки уведомлений по массиву ADMIN_IDS
+  function sendNotificationToAll(text) {
+    ADMIN_IDS.forEach(chatId => {
+      const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+      })
+      .then(res => {
+        if (!res.ok) {
+          console.error(`Ошибка отправки в чат ${chatId}:`, res.statusText);
+        }
+      })
+      .catch(err => console.error('Сбой сети при логировании:', err));
+    });
+  }
+
+  // Запуск логики после полной загрузки DOM дерева
+  document.addEventListener('DOMContentLoaded', () => {
+    renderBottomMenu();
+    
+    const dateInput = document.getElementById('b-date');
+    if (dateInput) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+  });
+</script>
+</body>
+</html>
