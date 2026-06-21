@@ -367,6 +367,52 @@
     align-self: center;
   }
 
+  .booking-cutoff-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(244,114,182,0.14), rgba(176,110,243,0.1));
+    border: 1px solid rgba(244,114,182,0.4);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    animation: cutoffGlow 2.6s ease-in-out infinite;
+  }
+
+  @keyframes cutoffGlow {
+    0%, 100% { box-shadow: 0 0 0 rgba(244,114,182,0); }
+    50% { box-shadow: 0 0 22px rgba(244,114,182,0.35); }
+  }
+
+  .booking-cutoff-banner .cutoff-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .booking-cutoff-banner .cutoff-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--pink);
+    margin-bottom: 2px;
+  }
+
+  .booking-cutoff-banner .cutoff-sub {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+
+  .required-mark { color: var(--pink); font-weight: 700; }
+
+  .time-hint {
+    font-size: 11px;
+    color: var(--pink);
+    margin-top: 6px;
+    opacity: 0.85;
+  }
+
   .booking-type-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -642,7 +688,7 @@
         <div class="qc-title">Меню бара</div>
         <div class="qc-sub">полный список</div>
       </div>
-      <div class="quick-card pink" onclick="showSection('rules')">
+      <div class="quick-card pink" onclick="openDjShowCard()">
         <div class="qc-icon">🎵</div>
         <div class="qc-title">DJ & Караоке</div>
         <div class="qc-sub">каждую ночь</div>
@@ -689,7 +735,7 @@
       </div>
     </div>
 
-    <div class="info-card">
+    <div class="info-card" id="dj-show-card">
       <div class="info-card-header" onclick="toggleCard(this)">
         <span class="ic-icon">⏰</span>
         <span class="ic-title" style="color: var(--gold)">Вход, DJ-шоу и Караоке</span>
@@ -940,6 +986,15 @@
   <!-- =================== BOOKING =================== -->
   <div class="section" id="section-booking">
     <div class="section-heading">📅 Забронировать</div>
+
+    <div class="booking-cutoff-banner">
+      <div class="cutoff-icon">🌙⏰</div>
+      <div class="cutoff-text">
+        <div class="cutoff-title">Бронь принимается только до 01:00</div>
+        <div class="cutoff-sub">После 01:00 столики занимаются в живой очереди — без брони</div>
+      </div>
+    </div>
+
     <div class="booking-type-grid">
       <div class="book-type-card selected" id="btc-table" onclick="selectBookType('table')">
         <div class="bt-icon">🪑</div>
@@ -975,8 +1030,13 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="form-label">Время прихода <span class="required-mark">*</span></label>
+        <input type="time" class="form-input" id="b-time" max="01:00">
+        <div class="time-hint">⚠️ Бронь возможна только на время до 01:00</div>
+      </div>
+      <div class="form-group">
         <label class="form-label">Комментарий</label>
-        <input type="text" class="form-input" id="b-comment" placeholder="Пожелания, время прихода...">
+        <input type="text" class="form-input" id="b-comment" placeholder="Пожелания...">
       </div>
       <button class="submit-btn" onclick="submitBooking()">Отправить заявку 🚀</button>
     </div>
@@ -1068,6 +1128,35 @@
   <!-- =================== ADMIN PANEL =================== -->
   <div class="section" id="section-admin">
     <div class="section-heading">⚡ Служебные регламенты</div>
+
+    <!-- Управление администраторами -->
+    <div class="info-card" style="border-color: var(--purple); margin-bottom: 16px;">
+      <div class="info-card-header" style="cursor: default;">
+        <span class="ic-icon">👥</span>
+        <span class="ic-title" style="color: var(--purple)">Управление администраторами</span>
+      </div>
+      <div style="padding-top: 10px;">
+        <div class="form-group">
+          <label class="form-label">Telegram ID нового админа</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" inputmode="numeric" class="form-input" id="admin-id-input" placeholder="Например: 123456789">
+            <button class="submit-btn" style="margin-top:0; width: auto; padding: 0 16px; white-space: nowrap;" onclick="manageAdminAction('add')" id="btn-add-admin">Добавить</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Удалить админа по ID</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" inputmode="numeric" class="form-input" id="admin-id-remove" placeholder="Например: 123456789">
+            <button class="submit-btn" style="margin-top:0; width: auto; padding: 0 16px; white-space: nowrap; background: linear-gradient(135deg, var(--pink), #db2777); box-shadow: 0 0 20px rgba(244,114,182,0.4);" onclick="manageAdminAction('remove')" id="btn-remove-admin">Удалить</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Текущие админы</label>
+          <div id="current-admins-list" style="font-size: 13px; color: var(--text2); line-height: 1.8; background: var(--bg3); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);">Загрузка...</div>
+        </div>
+      </div>
+    </div>
+
     <div class="problem-card">
       <div class="problem-header"><span class="problem-icon">🤬</span><div class="problem-title">Конфликт из-за платного входа</div></div>
       <div class="problem-solution"><div class="solution-label">Решение:</div>Спокойно объяснить, что после 23:00 работает приглашённый DJ и это стандартная шоу-программа. При сильном негативе позвать старшего смены.</div>
@@ -1081,27 +1170,161 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   // Константы конфигурации
-  const TG_BOT_TOKEN = '8683040747:AAHooN4JQefQ2H3PB1W-htE-3lwhjgwYodc';
-  const ADMIN_IDS = [673643650, 1110809665, 219264947, 868871575];
-
+  const GH_REPO = 'Dunyashas/tg_bods';
+  const GH_FILE = 'admins.json';
+  const GH_BRANCH = 'main';
+  const ADMINS_RAW_URL = `https://raw.githubusercontent.com/${GH_REPO}/${GH_BRANCH}/${GH_FILE}`;
+ 
   // Глобальное состояние приложения
   let currentSection = 'home';
   let selectedBookType = 'table';
+  let ADMIN_IDS = [];
   let isAdmin = false;
   let currentTgId = null;
+  let adminBusy = false; // защита от двойных кликов при сохранении на GitHub
 
   // Инициализация Telegram WebApp
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
-    
+
     const user = window.Telegram.WebApp.initDataUnsafe?.user;
     if (user) {
-      currentTgId = user.id;
-      if (ADMIN_IDS.includes(currentTgId)) {
-        isAdmin = true;
-      }
+      currentTgId = String(user.id);
     }
+  }
+
+  // Загрузка актуального списка админов с GitHub
+  async function loadAdmins() {
+    try {
+      const res = await fetch(`${ADMINS_RAW_URL}?v=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('admins.json повреждён');
+
+      ADMIN_IDS = data.map(String);
+      isAdmin = currentTgId !== null && ADMIN_IDS.includes(currentTgId);
+
+      renderBottomMenu();
+      updateAdminsListUI();
+    } catch (e) {
+      console.error('Ошибка загрузки админов:', e);
+      const listEl = document.getElementById('current-admins-list');
+      if (listEl) listEl.innerHTML = '<span style="color:var(--pink)">⚠️ Не удалось загрузить список администраторов</span>';
+    }
+  }
+
+  // Сохранение обновлённого списка админов на GitHub
+  async function saveAdminsToGitHub(newArray) {
+    try {
+
+      const res = await fetch('/api/admins', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          admins: newArray
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Ошибка сервера');
+      }
+
+      ADMIN_IDS = newArray;
+      isAdmin = currentTgId !== null && ADMIN_IDS.includes(currentTgId);
+
+      updateAdminsListUI();
+      renderBottomMenu();
+
+      showToastNotification('✅ Сохранено!');
+
+      return true;
+
+    } catch (e) {
+
+      console.error(e);
+
+      showToastNotification(
+        '❌ Ошибка сохранения: ' + e.message
+      );
+
+      return false;
+    }
+  }
+
+  function setAdminButtonsBusy(busy) {
+    adminBusy = busy;
+    const addBtn = document.getElementById('btn-add-admin');
+    const removeBtn = document.getElementById('btn-remove-admin');
+    [addBtn, removeBtn].forEach(btn => {
+      if (!btn) return;
+      btn.disabled = busy;
+      btn.style.opacity = busy ? '0.5' : '1';
+    });
+  }
+
+  // Добавление/удаление админа (вызывается из HTML)
+  async function manageAdminAction(action) {
+    if (adminBusy) return;
+    if (!isAdmin) {
+      showToastNotification('⛔ Недостаточно прав');
+      return;
+    }
+
+    const inputEl = document.getElementById(action === 'add' ? 'admin-id-input' : 'admin-id-remove');
+    const id = (inputEl.value || '').trim();
+
+    if (!id || !/^\d+$/.test(id)) {
+      showToastNotification('⚠️ Введите корректный numeric ID');
+      return;
+    }
+
+    let newList = [...ADMIN_IDS];
+
+    if (action === 'add') {
+      if (newList.includes(id)) {
+        showToastNotification('Этот ID уже в списке');
+        return;
+      }
+      newList.push(id);
+    } else {
+      if (!newList.includes(id)) {
+        showToastNotification('Такого ID нет в списке');
+        return;
+      }
+      if (newList.length === 1) {
+        showToastNotification('⚠️ Нельзя удалить последнего администратора');
+        return;
+      }
+      newList = newList.filter(item => item !== id);
+    }
+
+    setAdminButtonsBusy(true);
+    const ok = await saveAdminsToGitHub(newList);
+    setAdminButtonsBusy(false);
+
+    if (ok) {
+      inputEl.value = '';
+      sendNotificationToAll(action === 'add'
+        ? `➕ Добавлен админ: ${id}`
+        : `➖ Удалён админ: ${id}`);
+    }
+  }
+
+  // Отрисовка списка админов в UI
+  function updateAdminsListUI() {
+    const listEl = document.getElementById('current-admins-list');
+    if (!listEl) return;
+    if (!ADMIN_IDS.length) {
+      listEl.innerHTML = '<span style="color:var(--text3)">Список пуст</span>';
+      return;
+    }
+    listEl.innerHTML = ADMIN_IDS.map(id =>
+      `🔹 <code>${id}</code>${id === currentTgId ? ' <span style="color:var(--cyan)">(вы)</span>' : ''}`
+    ).join('<br>');
   }
 
   // Динамическая отрисовка нижнего навигационного меню
@@ -1175,6 +1398,23 @@
     }
   }
 
+  // Открывает карточку "Вход, DJ-шоу и Караоке" на главной и плавно скроллит к ней
+  function openDjShowCard() {
+    showSection('home');
+    const card = document.getElementById('dj-show-card');
+    if (!card) return;
+
+    document.querySelectorAll('.info-card').forEach(c => c.classList.remove('open'));
+    card.classList.add('open');
+
+    // Небольшая задержка, чтобы секция home успела стать видимой перед скроллом
+    setTimeout(() => {
+      if (typeof card.scrollIntoView === 'function') {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
+  }
+
   // Выбор типа бронирования (Обычный стол / VIP)
   function selectBookType(type) {
     selectedBookType = type;
@@ -1246,17 +1486,25 @@
     const phoneEl = document.getElementById('b-phone');
     const guestsEl = document.getElementById('b-guests');
     const dateEl = document.getElementById('b-date');
+    const timeEl = document.getElementById('b-time');
     const commentEl = document.getElementById('b-comment');
 
     const name = nameEl ? nameEl.value.trim() : '';
     const phone = phoneEl ? phoneEl.value.trim() : '';
     const guests = guestsEl ? guestsEl.value : '1';
     const date = dateEl ? dateEl.value : '';
+    const time = timeEl ? timeEl.value : '';
     const comment = (commentEl && commentEl.value.trim()) ? commentEl.value.trim() : 'нет';
     const typeLabel = selectedBookType === 'vip' ? 'VIP комната 👑' : 'Обычный столик 🪑';
 
-    if (!name || !phone || !date) {
-      alert('Пожалуйста, заполните Имя, Телефон и Дату бронирования.');
+    if (!name || !phone || !date || !time) {
+      alert('Пожалуйста, заполните Имя, Телефон, Дату и Время бронирования.');
+      return;
+    }
+
+    // Бронь принимается на время с 19:00 вечера до 01:00 ночи (диапазон через полночь)
+    if (!isBookingTimeAllowed(time)) {
+      alert('Бронирование столиков возможно только на время с 19:00 до 01:00.\nПосле 01:00 столики занимаются в живой очереди.');
       return;
     }
 
@@ -1266,6 +1514,7 @@
                         `<b>Телефон:</b> ${phone}\n` +
                         `<b>Кол-во гостей:</b> ${guests}\n` +
                         `<b>Дата визита:</b> ${date}\n` +
+                        `<b>Время прихода:</b> ${time}\n` +
                         `<b>Комментарий:</b> ${comment}\n\n` +
                         `👤 Telegram ID: ${currentTgId || 'Не определён'}`;
 
@@ -1283,28 +1532,53 @@
     if (formElement) formElement.reset();
   }
 
-  // Функция массовой отправки уведомлений по массиву ADMIN_IDS
-  function sendNotificationToAll(text) {
-    ADMIN_IDS.forEach(chatId => {
-      const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
-      })
-      .then(res => {
-        if (!res.ok) {
-          console.error(`Ошибка отправки в чат ${chatId}:`, res.statusText);
-        }
-      })
-      .catch(err => console.error('Сбой сети при логировании:', err));
-    });
+  // Проверяет, что время попадает в допустимый диапазон брони: 19:00 - 01:00 (через полночь)
+  function isBookingTimeAllowed(timeStr) {
+    const [h, m] = timeStr.split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return false;
+    const minutes = h * 60 + m;
+    const startMinutes = 19 * 60;       // 19:00
+    const endMinutes = 1 * 60;          // 01:00 (следующего дня)
+    // Допустимо: время >= 19:00 ИЛИ время <= 01:00
+    return minutes >= startMinutes || minutes <= endMinutes;
   }
 
+  // Функция массовой отправки уведомлений по массиву ADMIN_IDS
+  async function sendNotificationToAll(text) {
+
+  for (const chatId of ADMIN_IDS) {
+
+    try {
+
+      const res = await fetch('/api/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chatId,
+          text
+        })
+      });
+
+      if (!res.ok) {
+        console.error(`Ошибка отправки в чат ${chatId}`);
+      }
+
+    } catch (err) {
+
+      console.error(
+        `Ошибка отправки в чат ${chatId}:`,
+        err
+      );
+    }
+  }
+}
   // Запуск логики после полной загрузки DOM дерева
   document.addEventListener('DOMContentLoaded', () => {
-    renderBottomMenu();
-    
+    renderBottomMenu(); // мгновенная отрисовка с гостевыми пунктами, чтобы не было пустого экрана
+    loadAdmins();        // асинхронно подтянет статус админа и перерисует при необходимости
+
     const dateInput = document.getElementById('b-date');
     if (dateInput) {
       dateInput.value = new Date().toISOString().split('T')[0];
