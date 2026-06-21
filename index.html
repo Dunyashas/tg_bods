@@ -1170,14 +1170,11 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   // Константы конфигурации
-  const TG_BOT_TOKEN = '8683040747:AAHooN4JQefQ2H3PB1W-htE-3lwhjgwYodc';
-  const GH_TOKEN   = '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';
-  const GH_REPO    = 'Dunyashas/new_tg_bots';
-  const GH_FILE    = 'admins.json';
-  const GH_BRANCH  = 'main';
+  const GH_REPO = 'Dunyashas/tg_bods';
+  const GH_FILE = 'admins.json';
+  const GH_BRANCH = 'main';
   const ADMINS_RAW_URL = `https://raw.githubusercontent.com/${GH_REPO}/${GH_BRANCH}/${GH_FILE}`;
-  const GH_API_URL = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
-
+ 
   // Глобальное состояние приложения
   let currentSection = 'home';
   let selectedBookType = 'table';
@@ -1220,34 +1217,20 @@
   // Сохранение обновлённого списка админов на GitHub
   async function saveAdminsToGitHub(newArray) {
     try {
-      const getRes = await fetch(GH_API_URL, {
-        headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' },
-        cache: 'no-store'
-      });
-      if (!getRes.ok) throw new Error('Не удалось получить файл с GitHub (HTTP ' + getRes.status + ')');
-      const fileData = await getRes.json();
 
-      const jsonStr = JSON.stringify(newArray, null, 2);
-      const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
-
-      const putRes = await fetch(GH_API_URL, {
-        method: 'PUT',
+      const res = await fetch('/api/admins', {
+        method: 'POST',
         headers: {
-          'Authorization': `token ${GH_TOKEN}`,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: `Update admins.json via Mini App (${new Date().toISOString()})`,
-          content: base64Content,
-          sha: fileData.sha,
-          branch: GH_BRANCH
+          admins: newArray
         })
       });
 
-      if (!putRes.ok) {
-        const errBody = await putRes.json().catch(() => ({}));
-        throw new Error(errBody.message || ('HTTP ' + putRes.status));
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Ошибка сервера');
       }
 
       ADMIN_IDS = newArray;
@@ -1255,12 +1238,19 @@
 
       updateAdminsListUI();
       renderBottomMenu();
+
       showToastNotification('✅ Сохранено!');
+
       return true;
 
     } catch (e) {
-      console.error('Ошибка сохранения на GitHub:', e);
-      showToastNotification('❌ Ошибка сохранения: ' + e.message);
+
+      console.error(e);
+
+      showToastNotification(
+        '❌ Ошибка сохранения: ' + e.message
+      );
+
       return false;
     }
   }
@@ -1554,23 +1544,36 @@
   }
 
   // Функция массовой отправки уведомлений по массиву ADMIN_IDS
-  function sendNotificationToAll(text) {
-    ADMIN_IDS.forEach(chatId => {
-      const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
-      })
-      .then(res => {
-        if (!res.ok) {
-          console.error(`Ошибка отправки в чат ${chatId}:`, res.statusText);
-        }
-      })
-      .catch(err => console.error('Сбой сети при логировании:', err));
-    });
-  }
+  async function sendNotificationToAll(text) {
 
+  for (const chatId of ADMIN_IDS) {
+
+    try {
+
+      const res = await fetch('/api/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chatId,
+          text
+        })
+      });
+
+      if (!res.ok) {
+        console.error(`Ошибка отправки в чат ${chatId}`);
+      }
+
+    } catch (err) {
+
+      console.error(
+        `Ошибка отправки в чат ${chatId}:`,
+        err
+      );
+    }
+  }
+}
   // Запуск логики после полной загрузки DOM дерева
   document.addEventListener('DOMContentLoaded', () => {
     renderBottomMenu(); // мгновенная отрисовка с гостевыми пунктами, чтобы не было пустого экрана
