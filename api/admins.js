@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   const token = process.env.GITHUB_TOKEN;
 
   const owner = 'Dunyashas';
-  const repo = 'new_tg_bots';
+  const repo = 'tg_bods';
   const file = 'admins.json';
 
   const githubUrl =
